@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { parseCargoAuditReport, CargoAuditParseError, Vulnerability } from './auditReport';
+import { recordHit } from './reviewPrompt';
 
 const execFileAsync = promisify(execFile);
 
@@ -14,7 +15,7 @@ function lineOfCrate(cargoTomlText: string, crateName: string): number {
   return index === -1 ? 0 : index;
 }
 
-async function runAudit(): Promise<void> {
+async function runAudit(context: vscode.ExtensionContext): Promise<void> {
   const folders = vscode.workspace.workspaceFolders;
   if (!folders || folders.length === 0) {
     void vscode.window.showErrorMessage('Cargo Audit Companion: open a folder/workspace first.');
@@ -80,13 +81,16 @@ async function runAudit(): Promise<void> {
     return diagnostic;
   });
   diagnostics.set(cargoTomlUri, diags);
+  recordHit(context);
 }
 
 export function activate(context: vscode.ExtensionContext): void {
   diagnostics = vscode.languages.createDiagnosticCollection('cargoAuditCompanion');
   context.subscriptions.push(diagnostics);
 
-  context.subscriptions.push(vscode.commands.registerCommand('cargoAuditCompanion.run', () => void runAudit()));
+  context.subscriptions.push(
+    vscode.commands.registerCommand('cargoAuditCompanion.run', () => void runAudit(context)),
+  );
 }
 
 export function deactivate(): void {
