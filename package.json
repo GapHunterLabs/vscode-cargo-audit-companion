@@ -2,7 +2,7 @@
   "name": "cargo-audit-companion",
   "displayName": "Cargo Audit Companion",
   "description": "Wraps 'cargo audit --json' as inline VS Code diagnostics on Cargo.toml -- RustSec advisory database check for your dependencies.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "GapHunterLabs",
   "icon": "images/icon.png",
   "license": "Apache-2.0",
